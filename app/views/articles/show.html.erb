@@ -1,0 +1,154 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @article.title %>
+</p>
+
+<p>
+  <b>Body:</b>
+  <%= @article.body %>
+</p>
+
+<p>
+  <b>Author:</b>
+  <%= @article.author %>
+</p>
+
+
+<div class="container">
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-comment"></span> Comments
+            </div>
+            <div class="panel-body">
+                <ul class="chat">
+                    <% @comments.each do |comment| %>
+                        <li class="left clearfix"><span class="chat-img pull-left">
+                            <img src="http://placehold.it/50/55C1E7/fff&text=<%= User.find(comment.user_id).name.first.upcase %>" alt="User Avatar" class="img-circle" />
+                        </span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font"><%= User.find(comment.user_id).name %></strong> <small class="pull-right text-muted">
+                                        <span class="glyphicon glyphicon-time"></span><%= time_ago_in_words(comment.created_at) %> ago</small>
+                                </div>
+                                <% if comment.user_id == current_user.id %>
+                                	<% unless comment.children.any? %>
+                                		<p><%= link_to 'Destroy', "/articles/comment_delete/#{comment.id}", :method=> :post, data: { confirm: 'Are you sure?' } %></p>
+                                	<% end %>
+                                <% end %>
+                                <p>
+									<p><%= comment.message %></p>
+									<div class="col-lg-offset-1">
+										<ul class="chat">
+						                    <% comment.children.each do |com| %>
+						                        <li class="left clearfix"><span class="chat-img pull-left">
+						                            <img src="http://placehold.it/50/55C1E7/fff&text=<%= User.find(com.user_id).name.first.upcase %>" alt="User Avatar" class="img-circle" />
+						                        </span>
+						                            <div class="chat-body clearfix">
+						                                <div class="header">
+						                                    <strong class="primary-font"><%= User.find(com.user_id).name %></strong> <small class="pull-right text-muted">
+						                                        <span class="glyphicon glyphicon-time"></span><%= time_ago_in_words(com.created_at) %> ago</small>
+						                                </div>
+														<p><%= com.message %></p>
+						                            </div>
+						                        </li>
+											<% end %>
+						                </ul>
+
+
+										<form action="/articles/comment_reply" method="post">
+											<input type="hidden" name="article_id" value="<%= @article.id %>">
+											<input type="hidden" name="parent_id" value="<%= comment.id %>">
+											<input type="text" name="message" placeholder=" reply here...">
+											<input type="submit">
+										</form>
+									</p>
+									</div>
+                                </p>
+                            </div>
+                        </li>
+					<% end %>
+                </ul>
+            </div>
+            <div class="panel-footer">
+            	<form action="/articles/comment_create" method="post">
+                	<div class="input-group">
+						<input type="hidden" name="article_id" value="<%= @article.id %>">
+						<input id="btn-input"  type="text" name="message" class="form-control input-sm" placeholder="Type your message here...">
+						<span class="input-group-btn">
+                        <button class="btn btn-warning btn-sm" id="btn-chat">
+                                Send</button>
+                        </span>
+                    </div>
+				</form>                    
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<%= link_to 'Edit', edit_article_path(@article) %> |
+<%= link_to 'Back', articles_path %>
+
+<style type="text/css">
+	.chat
+	{
+	    list-style: none;
+	    margin: 0;
+	    padding: 0;
+	}
+
+	.chat li
+	{
+	    margin-bottom: 10px;
+	    padding-bottom: 5px;
+	    border-bottom: 1px dotted #B3A9A9;
+	}
+
+	.chat li.left .chat-body
+	{
+	    margin-left: 60px;
+	}
+
+	.chat li.right .chat-body
+	{
+	    margin-right: 60px;
+	}
+
+
+	.chat li .chat-body p
+	{
+	    margin: 0;
+	    color: #777777;
+	}
+
+	.panel .slidedown .glyphicon, .chat .glyphicon
+	{
+	    margin-right: 5px;
+	}
+
+
+	::-webkit-scrollbar-track
+	{
+	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	    background-color: #F5F5F5;
+	}
+
+	::-webkit-scrollbar
+	{
+	    width: 12px;
+	    background-color: #F5F5F5;
+	}
+
+	::-webkit-scrollbar-thumb
+	{
+	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	    background-color: #555;
+	}
+
+</style>
